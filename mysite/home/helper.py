@@ -2,8 +2,8 @@ from .models import Conversation, Message
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
-# from .rag import rag_chain
 from django.shortcuts import get_object_or_404
+from .rag_pipeline import RAGPipeline
 
 def load_session_history(session_id: str):
     chat_history = ChatMessageHistory()
@@ -28,20 +28,20 @@ def get_session_history(session_id: str) -> BaseChatMessageHistory:
         store[session_id].add_ai_message("Hi! Ask me anything related to the documents.")
     return store[session_id]
 
-from .rag_pipeline import RAGPipeline
-
 pipelines = {}
 
-# Invoke the chain and save the messages
+def create_pdf_pipeline(session_id, path):
+    rag_pipepline = RAGPipeline()
+    rag_pipepline.load_document(path)
+    rag_pipepline.setup_rag_chain()
+    pipelines[session_id] = rag_pipepline
+    return rag_pipepline
+
 def invoke_and_save(session_id, input_text):
-    
     conversation = get_object_or_404(Conversation, id=session_id)
 
     if session_id not in pipelines:
-        rag_pipepline = RAGPipeline()
-        rag_pipepline.load_document(conversation.pdf_file.path)
-        rag_pipepline.setup_rag_chain()
-        pipelines[session_id] = rag_pipepline
+        rag_pipepline = create_pdf_pipeline(session_id, conversation.pdf_file.path)
     else:
         rag_pipepline = pipelines[session_id]
 

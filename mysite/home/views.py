@@ -5,7 +5,7 @@ from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from django.shortcuts import render
 from .models import Conversation, Message
-from .helper import invoke_and_save
+from .helper import invoke_and_save, create_pdf_pipeline
 import json
 
 @csrf_exempt
@@ -58,9 +58,11 @@ import uuid
 def pdf_upload(request):
     image = request.FILES["file"]
     # result = invoke_and_save(session_id, user_input, file_path)
-
-    conversation = Conversation(id=uuid.uuid1(), title=image.name, pdf_file=image)
+    conv_id = uuid.uuid1()
+    conversation = Conversation(id=conv_id, title=image.name, pdf_file=image)
     conversation.save()
+
+    create_pdf_pipeline(conv_id, conversation.pdf_file.path)
 
     return render(request, 'home/home2.html')
         
@@ -81,7 +83,6 @@ class ChatbotAPI(APIView):
         # if not user_input:
             # return Response({"error": "No input provided"}, status=status.HTTP_400_BAD_REQUEST)
         
-        print("================>")
         user_input = request.data['curr_input']
         session_id = request.data['conversation_id']
         print(user_input)

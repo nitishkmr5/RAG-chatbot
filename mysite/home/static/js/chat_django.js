@@ -259,7 +259,10 @@ const ask_gpt = async (message) => {
 
 
 const message_input = document.getElementById(`message-input`);
-const handle_ask = async () => {
+const handle_ask = async (e) => {
+    if(e){
+        e.preventDefault();
+    }
 	message_input.style.height = `80px`;
 	message_input.focus();
 
@@ -273,10 +276,14 @@ const handle_ask = async () => {
 };
 
 const send_button = document.querySelector(`#send-button`);
+const input_form = document.querySelector(`#input-form`);
 window.onload = async () => {
     await load_conversations();
 	send_button.addEventListener(`click`, async () => {
 		console.log("clicked send");
 		await handle_ask();
+	});
+    input_form.addEventListener('submit', async (e) => {
+		await handle_ask(e);
 	});
 }
