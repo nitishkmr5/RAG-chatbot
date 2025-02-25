@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="A conversational ChatGPT that listens, learns, and challenges">
+        <meta property="og:title" content="ChatGPT light">
+        <meta property="og:image" content="https://openai.com/content/images/2022/11/ChatGPT.jpg">
+        <meta property="og:description" content="A conversational ChatGPT that listens, learns, and challenges">
+        <meta property="og:url" content="https://github.com/alexsky177/chatgpt">
+        <link rel="stylesheet" href={% static 'css/style.css' %}>
+	    <link rel="stylesheet" href={% static 'googlecode.min.css' %}>
+        <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png">
+        <link rel="manifest" href="assets/img/site.webmanifest">
+        <script src="{% static 'js/icons.js' %}"></script>
+	    <script src="{% static 'js/config.js' %}" defer></script>
+        {% comment %} <script src="{% static 'js/chat.js' %}" defer></script> {% endcomment %}
+        <script src="{% static 'js/chat_django.js' %}" defer></script>
+	    <script src="https://cdn.jsdelivr.net/npm/markdown-it@latest/dist/markdown-it.min.js"></script>
+        <script>const user_image = `<img src={% static 'css/user.png' %} alt="User Avatar">`;
+                const gpt_image = `<img src={% static 'css/vinove_logo.png' %} alt="GPT Avatar">`;</script>
+		<script src="{% static 'js/highlight.min.js' %}"></script>
+        <script src="{% static 'js/highlightjs-copy.min.js' %}"></script>
+        <script>window.conversation_id = Array.from(crypto.getRandomValues(new Uint8Array(8))).map(n => n.toString(24).padStart(4, '0')).join('-');</script>
+        <title>ChatGPT</title>
+    </head>
+    <body>
+        <div class="gradient"></div>
+        <div class="row">
+            <div class="box conversations">
+                <div class="top">
+                    <button class="new_convo" onclick="new_conversation()">
+                        <i class="fa-regular fa-plus"></i>
+                        <span>New chat</span>
+                    </button>
+                </div>
+                <div class="bottom_buttons">
+                    <button onclick="delete_conversations()">
+                        <i class="fa-regular fa-trash red"></i>
+                        <span>Clean chat</span>
+                    </button>
+                </div>
+            </div>
+            <div class="conversation">
+                <div class="heading">
+                    <h1 class="title">Vinove AI</h1>
+                    <button>LOGOUT</button>
+                </div>
+                <div class="box" id="messages">
+                    <div class="itemsrow" id="homepage-items">
+                        <div class="example-container">
+                            <h1>How can I help you?</h1>
+                            <div class="examples">
+                                <button class="button-custom">"Explain quantum computing in simple terms"</button>
+                                <button class="button-custom">"Got any creative ideas for a 10 year old’s birthday?"</button>
+                                <button class="button-custom">"How do I make an HTTP request in Javascript?"</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <form action="/api/pdf_upload/" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" id="myFile" name="file">
+                    <input type="submit">
+                </form>
+        <div class="user-input">
+            <div class="box input-box">
+                <textarea id="message-input" placeholder="Ask me anything..." style="white-space: pre-line;"></textarea>
+                <div id="send-button">
+                    <i class="fa-regular fa-paper-plane-top"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+        <div class="mobile-sidebar">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+        <script>
+            const CSRF_TOKEN = '{{ csrf_token }}'
+        </script>
+    </body>
+</html>
